@@ -6,23 +6,23 @@ $adminPage = basename($_SERVER['PHP_SELF']);
         <aside class="col-12 col-lg-2">
             <div class="admin-sidebar h-100">
                 <div class="px-3 pb-3 d-none d-lg-block">
-                    <span class="text-uppercase small fw-bold text-white-50">Administration</span>
+                    <span class="text-uppercase small fw-bold text-muted">Administration</span>
                 </div>
                 <nav class="nav flex-row flex-lg-column flex-nowrap overflow-auto" aria-label="Admin navigation">
                     <a class="nav-link <?php echo $adminPage === 'dashboard.php' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/dashboard.php">
-                        <i class="bi bi-speedometer2"></i> Dashboard
+                        Dashboard
                     </a>
                     <a class="nav-link <?php echo $adminPage === 'manage_users.php' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/manage_users.php">
-                        <i class="bi bi-people"></i> Users
+                        Users
                     </a>
                     <a class="nav-link <?php echo $adminPage === 'manage_items.php' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/manage_items.php">
-                        <i class="bi bi-box-seam"></i> Item reports
+                        Item reports
                     </a>
                     <a class="nav-link <?php echo $adminPage === 'manage_claims.php' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/manage_claims.php">
-                        <i class="bi bi-hand-index-thumb"></i> Claims
+                        Claims
                     </a>
                     <a class="nav-link <?php echo $adminPage === 'categories.php' ? 'active' : ''; ?>" href="<?php echo BASE_URL; ?>admin/categories.php">
-                        <i class="bi bi-tags"></i> Categories
+                        Categories
                     </a>
                 </nav>
             </div>

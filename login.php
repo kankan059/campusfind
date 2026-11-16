@@ -115,13 +115,6 @@ require_once __DIR__ . '/includes/header.php';
                 </div>
             </form>
         </div>
-        
-        <div class="card card-custom mt-3 p-3 text-center bg-light border-0">
-            <small class="text-muted">
-                <strong>Demo Credentials:</strong><br>
-                Admin Email: <code>admin@campusfind.edu</code> | Password: <code>admin123</code>
-            </small>
-        </div>
     </div>
 </div>
 

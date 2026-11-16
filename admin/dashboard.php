@@ -48,27 +48,17 @@ require_once __DIR__ . '/../includes/admin_sidebar.php';
 
 <div class="row g-3 mb-4">
     <?php
-    $cards = [
-        ['users', 'Registered users', 'people', 'primary'],
-        ['lost', 'Lost reports', 'search', 'danger'],
-        ['found', 'Found reports', 'box-seam', 'info'],
-        ['pending_reports', 'Pending reports', 'clock-history', 'warning'],
-        ['claims', 'Total claims', 'hand-index-thumb', 'success'],
-        ['pending_claims', 'Pending claims', 'hourglass-split', 'secondary']
+    $overview = [
+        ['Registered users', $stats['users']],
+        ['Item reports', $stats['lost'] + $stats['found']],
+        ['Awaiting review', $stats['pending_reports'] + $stats['pending_claims']]
     ];
-    foreach ($cards as [$key, $label, $icon, $color]):
+    foreach ($overview as [$label, $value]):
     ?>
-        <div class="col-6 col-xl-4">
-            <div class="stat-card h-100">
-                <div class="d-flex justify-content-between align-items-center gap-2">
-                    <div>
-                        <div class="small text-muted fw-semibold"><?php echo e($label); ?></div>
-                        <div class="stat-number"><?php echo $stats[$key]; ?></div>
-                    </div>
-                    <div class="stat-icon bg-<?php echo e($color); ?>-subtle text-<?php echo e($color); ?>">
-                        <i class="bi bi-<?php echo e($icon); ?>"></i>
-                    </div>
-                </div>
+        <div class="col-md-4">
+            <div class="stat-card">
+                <div class="small text-muted fw-semibold"><?php echo e($label); ?></div>
+                <div class="stat-number"><?php echo (int)$value; ?></div>
             </div>
         </div>
     <?php endforeach; ?>
