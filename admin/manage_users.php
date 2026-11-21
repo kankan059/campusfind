@@ -90,9 +90,7 @@ require_once __DIR__ . '/../includes/admin_sidebar.php';
     <p class="text-muted mb-0">Search accounts, view details, and manage administrator roles.</p>
 </div>
 
-<div class="alert alert-info">
-    User blocking is not available because the current database has no account-status field. Role changes are protected against self-demotion and removing the last administrator.
-</div>
+
 
 <?php if ($selectedUser): ?>
     <section class="card card-custom p-3 p-md-4 mb-4">
