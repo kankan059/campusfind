@@ -166,6 +166,20 @@ $stmt = $pdo->prepare(
 $stmt->execute([$userId]);
 $reports = $stmt->fetchAll();
 
+$stmt = $pdo->prepare(
+    'SELECT r.item_id, r.message, r.photo, r.created_at, u.name
+     FROM finder_replies r
+     JOIN items i ON i.item_id = r.item_id
+     JOIN users u ON u.user_id = r.sender_id
+     WHERE i.user_id = ? ORDER BY r.reply_id DESC'
+);
+$stmt->execute([$userId]);
+$replies = [];
+while ($reply = $stmt->fetch()) {
+    $replies[$reply['item_id']][] = $reply;
+}
+$admins = $replies ? admin_contacts($pdo) : [];
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -281,6 +295,28 @@ require_once __DIR__ . '/../includes/header.php';
                                 <?php endif; ?>
                                 <span class="fw-semibold"><?php echo e($report['item_name']); ?></span>
                                 <div class="small text-muted"><?php echo e($report['location']); ?></div>
+                                <?php if (!empty($replies[$report['item_id']])): ?>
+                                    <details class="mt-2">
+                                        <summary>Finder replies (<?php echo count($replies[$report['item_id']]); ?>)</summary>
+                                        <?php foreach ($admins as $admin): ?>
+                                            <p class="my-2"><a href="mailto:<?php echo e($admin['email']); ?>?subject=Lost%20item%20report%20%23<?php echo (int)$report['item_id']; ?>">Contact <?php echo e($admin['name']); ?> to arrange pickup</a></p>
+                                        <?php endforeach; ?>
+                                        <?php foreach ($replies[$report['item_id']] as $reply): ?>
+                                            <div class="border-top py-2">
+                                                <strong><?php echo e($reply['name']); ?></strong>
+                                                <small class="text-muted"><?php echo e(format_date($reply['created_at'])); ?></small>
+                                                <?php if ($reply['message'] !== ''): ?>
+                                                    <p class="mb-1 text-break"><?php echo nl2br(e($reply['message'])); ?></p>
+                                                <?php endif; ?>
+                                                <?php if ($reply['photo']): ?>
+                                                    <a href="<?php echo e(BASE_URL . 'uploads/items/' . rawurlencode($reply['photo'])); ?>">
+                                                        <img loading="lazy" class="img-thumbnail" style="max-height: 140px" src="<?php echo e(BASE_URL . 'uploads/items/' . rawurlencode($reply['photo'])); ?>" alt="Photo from <?php echo e($reply['name']); ?>">
+                                                    </a>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endforeach; ?>
+                                    </details>
+                                <?php endif; ?>
                             </td>
                             <td><?php echo get_type_badge($report['item_type']); ?></td>
                             <td><?php echo e($report['category_name']); ?></td>

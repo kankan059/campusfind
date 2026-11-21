@@ -1,5 +1,4 @@
 <?php
-// user/dashboard.php - Student Dashboard
 $pageTitle = "Student Dashboard";
 require_once __DIR__ . '/../includes/functions.php';
 
@@ -7,7 +6,6 @@ require_login();
 
 $user_id = $_SESSION['user_id'];
 
-// Get user statistics
 $totalLost = 0;
 $totalFound = 0;
 $totalClaims = 0;
@@ -15,22 +13,18 @@ $recentReports = [];
 $recentClaims = [];
 
 try {
-    // Total lost items reported by user
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM items WHERE user_id = ? AND item_type = 'lost'");
     $stmt->execute([$user_id]);
     $totalLost = (int)$stmt->fetchColumn();
 
-    // Total found items reported by user
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM items WHERE user_id = ? AND item_type = 'found'");
     $stmt->execute([$user_id]);
     $totalFound = (int)$stmt->fetchColumn();
 
-    // Total claims submitted by user
     $stmt = $pdo->prepare("SELECT COUNT(*) FROM claims WHERE user_id = ?");
     $stmt->execute([$user_id]);
     $totalClaims = (int)$stmt->fetchColumn();
 
-    // Recent 5 reports by user
     $stmt = $pdo->prepare("
         SELECT i.*, c.category_name 
         FROM items i 
@@ -42,7 +36,6 @@ try {
     $stmt->execute([$user_id]);
     $recentReports = $stmt->fetchAll();
 
-    // Recent 5 claims by user
     $stmt = $pdo->prepare("
         SELECT cl.*, i.item_name, i.item_type, i.location 
         FROM claims cl 
@@ -78,7 +71,6 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<!-- Stats Row -->
 <div class="row g-4 mb-5">
     <div class="col-md-4">
         <div class="stat-card border-start border-danger border-5">
@@ -121,9 +113,7 @@ require_once __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<!-- Recent Activity Tabs/Lists -->
 <div class="row g-4">
-    <!-- Recent Reports Column -->
     <div class="col-lg-7">
         <div class="card card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">
@@ -168,7 +158,6 @@ require_once __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
-    <!-- Recent Claims Column -->
     <div class="col-lg-5">
         <div class="card card-custom p-4 h-100">
             <div class="d-flex justify-content-between align-items-center mb-3">

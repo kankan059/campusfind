@@ -1,5 +1,4 @@
 <?php
-// about.php - Public About Page
 $pageTitle = "About Project";
 require_once __DIR__ . '/includes/header.php';
 ?>
@@ -27,10 +26,10 @@ require_once __DIR__ . '/includes/header.php';
                 <div class="col-md-6">
                     <h4 class="fw-bold text-navy"><i class="bi bi-cpu text-primary me-2"></i>Tech Stack</h4>
                     <ul class="list-group list-group-flush">
-                        <li class="list-group-item bg-transparent"><strong>Backend:</strong> Core PHP 8+ (PDO Prepared Statements)</li>
+                        <li class="list-group-item bg-transparent"><strong>Backend:</strong>PHP </li>
                         <li class="list-group-item bg-transparent"><strong>Database:</strong> MySQL (Relational DB)</li>
                         <li class="list-group-item bg-transparent"><strong>Frontend:</strong> HTML5, CSS3, Bootstrap 5, JavaScript</li>
-                        <li class="list-group-item bg-transparent"><strong>Server Environment:</strong> Apache / XAMPP</li>
+                        <li class="list-group-item bg-transparent"><strong>Server Environment:</strong> XAMPP</li>
                     </ul>
                 </div>
             </div>

@@ -1,9 +1,7 @@
 <?php
-// register.php - User Registration Page
 $pageTitle = "Register";
 require_once __DIR__ . '/includes/functions.php';
 
-// Redirect if already logged in
 if (is_logged_in()) {
     header("Location: " . BASE_URL . (is_admin() ? "admin/dashboard.php" : "user/dashboard.php"));
     exit;
@@ -15,7 +13,6 @@ $phone = '';
 $errors = [];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // CSRF Check
     if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
         $errors[] = "Invalid session token. Please refresh and try again.";
     }
@@ -26,7 +23,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $password = $_POST['password'] ?? '';
     $confirm_password = $_POST['confirm_password'] ?? '';
 
-    // Validations
     if (empty($name)) {
         $errors[] = "Full name is required.";
     } elseif (strlen($name) < 3) {
@@ -55,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = "Passwords do not match.";
     }
 
-    // Check duplicate email
     if (empty($errors)) {
         try {
             $stmt = $pdo->prepare("SELECT user_id FROM users WHERE email = ?");
@@ -69,7 +64,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Insert user into database
     if (empty($errors)) {
         try {
             $hashed_password = password_hash($password, PASSWORD_BCRYPT);

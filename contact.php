@@ -1,11 +1,9 @@
 <?php
-// contact.php - Public Contact Page
 $pageTitle = "Contact Us";
 require_once __DIR__ . '/includes/header.php';
 
 $messageSent = false;
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // Process contact form (feedback message)
     $messageSent = true;
 }
 ?>

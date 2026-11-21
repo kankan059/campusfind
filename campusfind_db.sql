@@ -1,12 +1,9 @@
--- CampusFind - Lost & Found Management System Database Schema
--- Database Name: campusfind_db
 
 CREATE DATABASE IF NOT EXISTS `campusfind_db` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `campusfind_db`;
 
--- --------------------------------------------------------
--- Table structure for `users`
--- --------------------------------------------------------
+
+
 CREATE TABLE IF NOT EXISTS `users` (
   `user_id` INT AUTO_INCREMENT PRIMARY KEY,
   `name` VARCHAR(100) NOT NULL,
@@ -17,17 +14,15 @@ CREATE TABLE IF NOT EXISTS `users` (
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for `categories`
--- --------------------------------------------------------
+
+
 CREATE TABLE IF NOT EXISTS `categories` (
   `category_id` INT AUTO_INCREMENT PRIMARY KEY,
   `category_name` VARCHAR(50) NOT NULL UNIQUE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for `items`
--- --------------------------------------------------------
+
+
 CREATE TABLE IF NOT EXISTS `items` (
   `item_id` INT AUTO_INCREMENT PRIMARY KEY,
   `user_id` INT NOT NULL,
@@ -49,9 +44,8 @@ CREATE TABLE IF NOT EXISTS `items` (
   CONSTRAINT `fk_items_categories` FOREIGN KEY (`category_id`) REFERENCES `categories` (`category_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Table structure for `claims`
--- --------------------------------------------------------
+
+
 CREATE TABLE IF NOT EXISTS `claims` (
   `claim_id` INT AUTO_INCREMENT PRIMARY KEY,
   `item_id` INT NOT NULL,
@@ -65,9 +59,20 @@ CREATE TABLE IF NOT EXISTS `claims` (
   CONSTRAINT `fk_claims_users` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- --------------------------------------------------------
--- Seed Data: Categories
--- --------------------------------------------------------
+
+
+CREATE TABLE IF NOT EXISTS finder_replies (
+  reply_id INT AUTO_INCREMENT PRIMARY KEY,
+  item_id INT NOT NULL,
+  sender_id INT NOT NULL,
+  message TEXT NOT NULL,
+  photo VARCHAR(255) DEFAULT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (item_id) REFERENCES items (item_id) ON DELETE CASCADE ON UPDATE CASCADE,
+  FOREIGN KEY (sender_id) REFERENCES users (user_id) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
 INSERT INTO `categories` (`category_id`, `category_name`) VALUES
 (1, 'Electronics'),
 (2, 'Documents'),
@@ -78,11 +83,8 @@ INSERT INTO `categories` (`category_id`, `category_name`) VALUES
 (7, 'Others')
 ON DUPLICATE KEY UPDATE `category_name` = VALUES(`category_name`);
 
--- --------------------------------------------------------
--- Seed Data: Default Administrator
--- Email: admin@campusfind.edu
--- Password: admin123
--- --------------------------------------------------------
+
+
 INSERT INTO `users` (`user_id`, `name`, `email`, `phone`, `password`, `role`) VALUES
-(1, 'Campus Admin', 'admin@campusfind.edu', '9876543210', '$2y$10$A.l928BnVaWKaQwghLwkced7.gciW6/GQkJWkANPGklc4xGm5MFmW', 'admin')
+(1, 'Campus Admin', 'admin@gmail.com', '9876543210', '$2y$10$A.l928BnVaWKaQwghLwkced7.gciW6/GQkJWkANPGklc4xGm5MFmW', 'admin')
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);

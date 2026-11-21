@@ -1,10 +1,8 @@
 <?php
-// includes/functions.php - Common Helper Functions
 
 require_once __DIR__ . '/../config/db.php';
 require_once __DIR__ . '/auth.php';
 
-// Escape HTML output safely
 function e($string) {
     return htmlspecialchars($string ?? '', ENT_QUOTES, 'UTF-8');
 }
@@ -13,12 +11,10 @@ function post_string($key, $default = '') {
     return isset($_POST[$key]) && is_string($_POST[$key]) ? trim($_POST[$key]) : $default;
 }
 
-// Set flash message
 function set_flash($type, $message) {
     $_SESSION['flash_' . $type] = $message;
 }
 
-// Display flash messages
 function display_flash_messages() {
     $types = ['success' => 'success', 'error' => 'danger', 'info' => 'info', 'warning' => 'warning'];
     foreach ($types as $key => $bsClass) {
@@ -32,14 +28,12 @@ function display_flash_messages() {
     }
 }
 
-// Format date nicely
 function format_date($dateString) {
     if (!$dateString) return 'N/A';
     $date = date_create($dateString);
     return date_format($date, 'M d, Y');
 }
 
-// Get HTML badge for item status
 function get_status_badge($status) {
     switch ($status) {
         case 'open':
@@ -53,7 +47,6 @@ function get_status_badge($status) {
     }
 }
 
-// Get HTML badge for approval status
 function get_approval_badge($status) {
     switch ($status) {
         case 'pending':
@@ -67,7 +60,6 @@ function get_approval_badge($status) {
     }
 }
 
-// Get HTML badge for item type
 function get_type_badge($type) {
     if ($type === 'lost') {
         return '<span class="badge bg-danger"><i class="bi bi-search"></i> Lost</span>';
@@ -76,13 +68,15 @@ function get_type_badge($type) {
     }
 }
 
-// Fetch all categories
 function get_all_categories($pdo) {
     $stmt = $pdo->query("SELECT * FROM categories ORDER BY category_name ASC");
     return $stmt->fetchAll();
 }
 
-// Upload item image safely
+function admin_contacts($pdo) {
+    return $pdo->query("SELECT name, email FROM users WHERE role = 'admin' ORDER BY user_id")->fetchAll();
+}
+
 function upload_item_image($fileInput) {
     if (!isset($_FILES[$fileInput]) || $_FILES[$fileInput]['error'] === UPLOAD_ERR_NO_FILE) {
         return ['success' => true, 'filename' => null];

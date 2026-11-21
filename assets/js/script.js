@@ -1,7 +1,5 @@
-// CampusFind Client Script
 
 document.addEventListener('DOMContentLoaded', function () {
-    // Image Upload Live Preview
     const imageInput = document.getElementById('imageInput');
     const imagePreview = document.getElementById('imagePreview');
 
@@ -22,7 +20,6 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Auto dismiss alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert-dismissible');
     alerts.forEach(function (alert) {
         setTimeout(function () {

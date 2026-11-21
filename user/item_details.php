@@ -39,6 +39,48 @@ if ($canSubmitClaim) {
 }
 $claimEligible = $canSubmitClaim && $existingClaimStatus === false;
 
+$canReply = $item && $item['item_type'] === 'lost' && $item['item_status'] === 'open'
+    && is_logged_in() && !is_admin() && (int)$_SESSION['user_id'] !== (int)$item['user_id'];
+$replyError = '';
+$message = post_string('message');
+if ($canReply && $_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verify_csrf_token(post_string('csrf_token'))) {
+        $replyError = 'Your form session expired. Refresh the page and try again.';
+    } elseif (mb_strlen($message) > 5000) {
+        $replyError = 'Keep your message within 5,000 characters.';
+    } else {
+        $upload = upload_item_image('photo');
+        if (!$upload['success']) {
+            $replyError = $upload['error'];
+        } elseif ($message === '' && !$upload['filename']) {
+            $replyError = 'Add a message or choose a photo before sending.';
+        } else {
+            $photo = $upload['filename'];
+            try {
+                $stmt = $pdo->prepare(
+                    "INSERT INTO finder_replies (item_id, sender_id, message, photo)
+                     SELECT item_id, ?, ?, ? FROM items
+                     WHERE item_id = ? AND item_type = 'lost' AND item_status = 'open'
+                       AND approval_status = 'approved' AND user_id <> ?"
+                );
+                $stmt->execute([$_SESSION['user_id'], $message, $photo, $itemId, $_SESSION['user_id']]);
+                if ($stmt->rowCount() === 1) {
+                    set_flash('success', 'Your reply was sent to the person who reported this item.');
+                    header('Location: ' . BASE_URL . 'user/item_details.php?id=' . $itemId);
+                    exit;
+                }
+                $replyError = 'This report is no longer accepting replies.';
+            } catch (PDOException $e) {
+                error_log('CampusFind finder reply failed: ' . $e->getMessage());
+                $replyError = 'Your reply could not be sent. Please try again.';
+            }
+            if ($photo !== null) {
+                unlink(__DIR__ . '/../uploads/items/' . $photo);
+            }
+        }
+    }
+}
+
 require_once __DIR__ . '/../includes/header.php';
 ?>
 
@@ -87,7 +129,26 @@ require_once __DIR__ . '/../includes/header.php';
                     <dd class="col-sm-8"><?php echo e(format_date($item['created_at'])); ?></dd>
                 </dl>
 
-                <?php if ($claimEligible): ?>
+                <?php if ($canReply): ?>
+                    <form method="post" enctype="multipart/form-data">
+                        <h2 class="h5 fw-bold">Found this item?</h2>
+                        <p>The owner and campus admins can see your reply. Contact an admin to arrange drop-off.</p>
+                        <?php foreach (admin_contacts($pdo) as $admin): ?>
+                            <p><a href="mailto:<?php echo e($admin['email']); ?>?subject=Lost%20item%20report%20%23<?php echo (int)$itemId; ?>">Email <?php echo e($admin['name']); ?> about report #<?php echo (int)$itemId; ?></a></p>
+                        <?php endforeach; ?>
+                        <?php if ($replyError !== ''): ?>
+                            <div class="alert alert-danger" role="alert"><?php echo e($replyError); ?></div>
+                        <?php endif; ?>
+                        <input type="hidden" name="csrf_token" value="<?php echo e(generate_csrf_token()); ?>">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea id="message" name="message" class="form-control mb-3" maxlength="5000" rows="3"><?php echo e($message); ?></textarea>
+                        <label for="photo" class="form-label">Photo (up to 5 MB)</label>
+                        <input id="photo" type="file" name="photo" class="form-control mb-3" accept=".jpg,.jpeg,.png,.gif,.webp">
+                        <button class="btn btn-primary-custom fw-bold">Send to owner</button>
+                    </form>
+                <?php elseif ($item['item_type'] === 'lost' && $item['item_status'] === 'open' && !is_logged_in()): ?>
+                    <p><a href="<?php echo BASE_URL; ?>login.php">Log in</a> to let the owner know you found this item.</p>
+                <?php elseif ($claimEligible): ?>
                     <a href="<?php echo BASE_URL; ?>user/claim_item.php?id=<?php echo (int)$item['item_id']; ?>" class="btn btn-primary-custom fw-bold mt-auto">
                         <i class="bi bi-hand-index-thumb me-1"></i>Claim item
                     </a>

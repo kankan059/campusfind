@@ -145,6 +145,17 @@ $stmt = $pdo->prepare(
 $stmt->execute($params);
 $items = $stmt->fetchAll();
 
+$finderReplies = $pdo->query(
+    'SELECT i.item_id, i.item_name, r.message, r.photo, r.created_at,
+            finder.name AS finder_name, finder.email AS finder_email, finder.phone AS finder_phone,
+            owner.name AS owner_name, owner.email AS owner_email, owner.phone AS owner_phone
+     FROM finder_replies r
+     JOIN items i ON i.item_id = r.item_id
+     JOIN users finder ON finder.user_id = r.sender_id
+     JOIN users owner ON owner.user_id = i.user_id
+     ORDER BY r.reply_id DESC'
+)->fetchAll();
+
 require_once __DIR__ . '/../includes/header.php';
 require_once __DIR__ . '/../includes/admin_sidebar.php';
 ?>
@@ -156,6 +167,26 @@ require_once __DIR__ . '/../includes/admin_sidebar.php';
     </div>
     <a href="<?php echo BASE_URL; ?>user/browse_items.php" class="btn btn-outline-primary">View public items</a>
 </div>
+
+<?php if ($finderReplies): ?>
+    <details class="card card-custom p-3 mb-4">
+        <summary class="fw-bold">Finder replies (<?php echo count($finderReplies); ?>)</summary>
+        <?php foreach ($finderReplies as $reply): ?>
+            <article class="border-top mt-3 pt-3">
+                <h2 class="h5"><?php echo e($reply['item_name']); ?> · Report #<?php echo (int)$reply['item_id']; ?></h2>
+                <p class="small text-muted"><?php echo e(format_date($reply['created_at'])); ?></p>
+                <p class="mb-1"><strong>Finder</strong> · <?php echo e($reply['finder_name']); ?> · <a href="mailto:<?php echo e($reply['finder_email']); ?>"><?php echo e($reply['finder_email']); ?></a> · <?php echo e($reply['finder_phone']); ?></p>
+                <p><strong>Owner</strong> · <?php echo e($reply['owner_name']); ?> · <a href="mailto:<?php echo e($reply['owner_email']); ?>"><?php echo e($reply['owner_email']); ?></a> · <?php echo e($reply['owner_phone']); ?></p>
+                <?php if ($reply['message'] !== ''): ?>
+                    <p class="text-break"><?php echo nl2br(e($reply['message'])); ?></p>
+                <?php endif; ?>
+                <?php if ($reply['photo']): ?>
+                    <a href="<?php echo e(BASE_URL . 'uploads/items/' . rawurlencode($reply['photo'])); ?>">View finder’s photo</a>
+                <?php endif; ?>
+            </article>
+        <?php endforeach; ?>
+    </details>
+<?php endif; ?>
 
 <?php if (isset($_GET['edit']) && !$editItem): ?>
     <div class="alert alert-warning">The requested report was not found.</div>

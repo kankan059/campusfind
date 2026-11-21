@@ -1,5 +1,4 @@
 <?php
-// logout.php - User Logout Script
 require_once __DIR__ . '/includes/functions.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST' ||
@@ -9,7 +8,6 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST' ||
     exit('Invalid logout request. Please submit the logout form again.');
 }
 
-// Unset session variables and destroy session
 $_SESSION = array();
 
 if (ini_get("session.use_cookies")) {
@@ -22,7 +20,6 @@ if (ini_get("session.use_cookies")) {
 
 session_destroy();
 
-// Start a clean session to set flash message
 session_start();
 set_flash('success', 'You have been successfully logged out.');
 
